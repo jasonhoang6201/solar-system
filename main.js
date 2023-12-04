@@ -1,18 +1,19 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
-import StartBackground from "./assets/start-background.jpg";
-import SunTexture from "./assets/sun-texture.jpg";
-import MercuryTexture from "./assets/mercury-texture.jpg";
-import SaturnTexture from "./assets/saturn-texture.jpg";
-import SaturnRingTexture from "./assets/saturn-ring-texture.png";
 import EarthTexture from "./assets/earth-texture.jpg";
 import JupiterTexture from "./assets/jupiter-texture.jpg";
 import MarTexture from "./assets/mars-texture.jpg";
+import MercuryTexture from "./assets/mercury-texture.jpg";
+import MoonTexture from "./assets/moon-texture.jpg";
 import NeptuneTexture from "./assets/neptune-texture.jpg";
 import PlutoTexture from "./assets/pluto-texture.jpg";
-import UranusTexture from "./assets/uranus-texture.jpg";
+import SaturnRingTexture from "./assets/saturn-ring-texture.png";
+import SaturnTexture from "./assets/saturn-texture.jpg";
+import StartBackground from "./assets/start-background.jpg";
+import SunTexture from "./assets/sun-texture.jpg";
 import UranusRingTexture from "./assets/uranus-ring-texture.png";
+import UranusTexture from "./assets/uranus-texture.jpg";
 import VenusTexture from "./assets/venus-texture.jpg";
 
 const textureLoader = new THREE.TextureLoader();
@@ -38,12 +39,13 @@ scene.background = cubeTextureLoader.load([
   StartBackground,
   StartBackground,
 ]);
+
 camera.position.set(-90, 140, 140);
 const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.update();
 
 //light
-scene.add(new THREE.AmbientLight(0x333333, 1));
+scene.add(new THREE.AmbientLight(0x333333, 10));
 
 const pointLight = new THREE.PointLight(0xffffff, 10000, 1000);
 scene.add(pointLight);
@@ -97,6 +99,9 @@ const saturn = createPlanet(9, SaturnTexture, 120, {
 
 //earth
 const earth = createPlanet(5, EarthTexture, 60);
+//moon
+const moon = createPlanet(1.5, MoonTexture, 10);
+earth.planet.add(moon.planet);
 
 //jupiter
 const jupiter = createPlanet(10, JupiterTexture, 180);
