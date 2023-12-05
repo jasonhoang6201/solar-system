@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 import EarthTexture from "./assets/earth-texture.jpg";
 import JupiterTexture from "./assets/jupiter-texture.jpg";
@@ -15,9 +16,11 @@ import SunTexture from "./assets/sun-texture.jpg";
 import UranusRingTexture from "./assets/uranus-ring-texture.png";
 import UranusTexture from "./assets/uranus-texture.jpg";
 import VenusTexture from "./assets/venus-texture.jpg";
+const Phoenix = new URL("./assets/phoenix.glb", import.meta.url);
 
 const textureLoader = new THREE.TextureLoader();
 const cubeTextureLoader = new THREE.CubeTextureLoader();
+const assetLoader = new GLTFLoader();
 
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -88,7 +91,7 @@ const createPlanet = (radius, texture, position, ring) => {
 };
 
 //mercury
-const mercury = createPlanet(3.2, MercuryTexture, 30);
+const mercury = createPlanet(3.2, MercuryTexture, 40);
 
 //saturn
 const saturn = createPlanet(9, SaturnTexture, 120, {
@@ -125,6 +128,33 @@ const uranus = createPlanet(7, UranusTexture, 210, {
 //venus
 const venus = createPlanet(4, VenusTexture, 0);
 
+//fog
+scene.fog = new THREE.Fog(0x00000, 1, 500);
+
+//phoenix
+let mixer;
+assetLoader.load(
+  Phoenix.href,
+  (gltf) => {
+    const phoenix = gltf.scene;
+    phoenix.scale.set(0.01, 0.01, 0.01);
+    phoenix.position.set(0, 0, 25);
+    sun.add(phoenix);
+
+    mixer = new THREE.AnimationMixer(phoenix);
+    const clips = gltf.animations;
+    clips.forEach((clip) => {
+      const action = mixer.clipAction(clip);
+      action.play();
+    });
+  },
+  undefined,
+  (error) => {
+    console.error(error);
+  }
+);
+
+const clock = new THREE.Clock();
 function animated() {
   requestAnimationFrame(animated);
 
@@ -157,6 +187,8 @@ function animated() {
 
   venus.planet.rotation.y += 0.01;
   venus.orbit.rotation.y += 0.007;
+
+  if (mixer) mixer.update(clock.getDelta());
 
   renderer.render(scene, camera);
 }
